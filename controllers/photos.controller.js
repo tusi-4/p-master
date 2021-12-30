@@ -65,13 +65,14 @@ exports.vote = async (req, res) => {
       const clientIp = requestIp.getClientIp(req);
       let voter = await Voter.findOne({ user: clientIp });
       if(!voter){
-        voter = new Voter({ user: clientIp, votes: [] });
+        voter = new Voter({ user: clientIp, votes: [photoToUpdate] });
         await voter.save();
       } else {
         if(voter.votes.includes(photoToUpdate)){
           throw new Error('You\'ve already voted for this picture!');
         } else {
           voter.votes.push(photoToUpdate);
+          await voter.save();
         }
       }
       photoToUpdate.votes++;
